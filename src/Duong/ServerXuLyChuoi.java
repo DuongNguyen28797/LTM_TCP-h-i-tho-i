@@ -14,15 +14,18 @@ public class ServerXuLyChuoi {
 
 	public ServerXuLyChuoi(String host, int port) {
 		try {
+			System.out.println("New server socket");
 			serverSocket = new ServerSocket(port);
 			SocketThread socket = new SocketThread(serverSocket.accept());
 			new Thread(socket).start();
 		} catch (IOException ex) {
+			System.out.println("Error: IO");
 			Logger.getLogger(ServerXuLyChuoi.class.getName()).log(Level.SEVERE, null, ex);
 		}
 	}
 
 	public static void main(String[] args) {
+		System.out.println("Running server class");
 		new ServerXuLyChuoi(IP, PORT);
 	}
 }
@@ -36,22 +39,36 @@ class SocketThread implements Runnable {
 
 	@Override
 	public void run() {
-		try {
-			DataInputStream dis = new DataInputStream(s.getInputStream());
-			DataOutputStream dos = new DataOutputStream(s.getOutputStream());
-			String serverReceive = dis.readUTF();
-			String serverResponse = serverReceive.toUpperCase() + "," 
-									+ serverReceive.toLowerCase() + ","
-									+ UpperFirst(serverReceive) + ","
-									+Converse(serverReceive) + ","
-									+DeleteVowel(serverReceive)+ ","
-									+ConverseString(serverReceive)+ ","
-									+ countWords(serverReceive);
-
-			dos.writeUTF(serverResponse);
-		} catch (IOException ex) {
-			Logger.getLogger(SocketThread.class.getName()).log(Level.SEVERE, null, ex);
+		boolean running = true;
+		while (running) {
+			try {
+				DataInputStream dis = new DataInputStream(s.getInputStream());
+				DataOutputStream dos = new DataOutputStream(s.getOutputStream());
+				
+				String serverReceive = dis.readUTF();
+				System.out.println("server received data");
+				System.out.println(serverReceive);
+				String serverResponse = serverReceive.toUpperCase() + "," 
+										+ serverReceive.toLowerCase() + ","
+										+ UpperFirst(serverReceive) + ","
+										+ Converse(serverReceive) + ","
+										+ DeleteVowel(serverReceive)+ ","
+										+ ConverseString(serverReceive)+ ","
+										+ countWords(serverReceive);
+	
+				dos.writeUTF(serverResponse);
+			} catch (IOException ex) {
+				System.out.println("IO error");
+				Logger.getLogger(SocketThread.class.getName()).log(Level.SEVERE, null, ex);
+			} catch (Exception ex) {
+				System.out.println("Exception error");
+				Logger.getLogger(SocketThread.class.getName()).log(Level.SEVERE, null, ex);
+			}
 		}
+		
+		if (Thread.interrupted()) {
+            return;
+        }
 	}
 
 	private int countWords(String s) {

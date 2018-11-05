@@ -98,7 +98,7 @@ public class ClientXuLyChuoi {
 			@Override
 			public void actionPerformed(ActionEvent arg0) {
 				try {
-					socket = new Socket("localhost",7004);
+					socket = new Socket("localhost", 7004);
 					dataInputStream = new DataInputStream(socket.getInputStream());
 					dataOutputStream  = new DataOutputStream(socket.getOutputStream());
 					String msg = jtaClientSend.getText();
@@ -114,6 +114,7 @@ public class ClientXuLyChuoi {
 					jtaDeleteVowel.append(arrReceive[4]);
 					jtaConverseString.append(arrReceive[5]);
 					jtfResultNumbberString.setText(arrReceive[6]);
+					socket.close();
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
@@ -127,7 +128,7 @@ public class ClientXuLyChuoi {
 
 
 	public static void main(String[] args) {
+		System.out.println("Running client class");
 		new ClientXuLyChuoi();
 	}
-
 }
